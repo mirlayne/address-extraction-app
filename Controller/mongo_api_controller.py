@@ -1,0 +1,61 @@
+import json
+
+from flask import Flask, Response, request
+
+from Entities.mongo_api_interface import MongoAPIInterface as MongoAPIInterface
+app = Flask(__name__)
+
+
+class MongoAPIController:
+
+    @app.route('/mongodb', methods=['GET'])
+    def mongo_read(self):
+        data = request.json
+        if data is None or data == {}:
+            return Response(response=json.dumps({"Error": "Please provide connection information"}),
+                            status=400,
+                            mimetype='application/json')
+        obj1 = MongoAPIInterface(data)
+        response = obj1.read()
+        return Response(response=json.dumps(response),
+                        status=200,
+                        mimetype='application/json')
+
+    @app.route('/mongodb', methods=['POST'])
+    def mongo_write(self):
+        data = request.json
+        if data is None or data == {} or 'Document' not in data:
+            return Response(response=json.dumps({"Error": "Please provide connection information"}),
+                            status=400,
+                            mimetype='application/json')
+        obj1 = MongoAPIInterface(data)
+        response = obj1.write(data)
+        return Response(response=json.dumps(response),
+                        status=200,
+                        mimetype='application/json')
+
+    @app.route('/mongodb', methods=['PUT'])
+    def mongo_update(self):
+        data = request.json
+        if data is None or data == {} or 'DataToBeUpdated' not in data:
+            return Response(response=json.dumps({"Error": "Please provide connection information"}),
+                            status=400,
+                            mimetype='application/json')
+        obj1 = MongoAPIInterface(data)
+        response = obj1.update()
+        return Response(response=json.dumps(response),
+                        status=200,
+                        mimetype='application/json')
+
+    @app.route('/mongodb', methods=['DELETE'])
+    def mongo_delete(self):
+        data = request.json
+        if data is None or data == {} or 'Filter' not in data:
+            return Response(response=json.dumps({"Error": "Please provide connection information"}),
+                            status=400,
+                            mimetype='application/json')
+        obj1 = MongoAPIInterface(data)
+        response = obj1.delete(data)
+        return Response(response=json.dumps(response),
+                        status=200,
+                        mimetype='application/json')
