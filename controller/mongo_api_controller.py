@@ -2,7 +2,7 @@ import json
 
 from flask import Flask, Response, request
 
-from Entities.mongo_api_interface import MongoAPIInterface as MongoAPIInterface
+from entities.mongo_api_interface import MongoAPIInterface as MongoAPIInterface
 app = Flask(__name__)
 
 
