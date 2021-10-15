@@ -1,0 +1,26 @@
+{
+  "columns": {
+    "badlist": "badlist",
+    "hidaname": "hida",
+    "metadata": "metadata",
+    "pattern": "pattern",
+    "invtaxo": "invtaxo",
+    "taxo": "taxo",
+    "vorhaben": "vorhaben",
+    "vorhaben_inv": "vorhaben_inv"
+  },
+  "json_files": {
+      "all_matches": "all_matches.json",
+      "badlist": "badlist.json",
+      "files": "files.json",
+      "hida": "hida.json",
+      "koepnick_files": "koepnick_files.json",
+      "no_matches": "no_matches.json",
+      "pattern": "pattern.json",
+      "resolved": "resolved.json",
+      "taxo": "taxo.json",
+      "topics3a": "topics3a.json",
+      "vorhaben": "vorhaben.json",
+      "vorhaben_inv": "vorhaben_inv.json"
+  }
+}
