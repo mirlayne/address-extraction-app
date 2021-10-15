@@ -11,8 +11,8 @@ log.basicConfig(
 
 
 class MongoAPI:
-    def __init__(self, data: dict) -> None:
-        self.client = MongoClient("mongodb://localhost:27017/")
+    def __init__(self, mongodb_api_client: MongoClient, data: dict) -> None:
+        self.client = mongodb_api_client
 
         database = data['database']
         collection = data['collection']
