@@ -1,7 +1,9 @@
 Address Extraction App
 ==============================
 
-Application to extract addresses and match the document with the corresponding object
+Application to extract addresses and match the document with the corresponding object.
+
+This project copies many functions from https://github.com/cfillies/semkibardoc to extract addresses that will serve as training for the Spacy models.
 
 Project Organization
 ------------

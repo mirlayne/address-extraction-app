@@ -73,11 +73,17 @@ class MongoAPI:
         return output
 
     def get_column_names(self) -> list:
+        '''
+        Auxiliary function to avoid using a global variable
+        :return: Value of variable "collist" in line 37 of export2mongodb.py
+        '''
         return self.cursor.list_collection_names() # Value of variable "collist" in line 37 of export2mongodb.py
 
+    # All the functions interfaces were made from the functions on file export2mongodb.py in https://github.com/cfillies/semkibardoc
+    # TODO: The following functions should be in the use_cases folder
     def mongo_export(self, mongodb_utils_filepath: str, hida_name: str, metadata_name: str, json_folderpath: str) -> None:
         '''
-        Function corresponding to "mongoExport" of file export2mongodb
+        Function corresponding to "mongoExport" on file export2mongodb.py
         :param mongodb_utils_filepath: json file that stores the necessary data such as column names and utils json file names
         :param hida_name: name of hida file
         :param metadata_name: name of metadata
@@ -162,9 +168,9 @@ class MongoAPI:
         if mongodb_column_dict.get("ishida", False) or mongodb_column_dict.get("isupdatehidataxo", False):
             self.project_hida_inv_taxo(hidaname, "invtaxo")
 
-    def load_array_collection(self, filename: str, colname: str):
+    def load_array_collection(self, filename: str, colname: str) -> None:
         '''
-        The same as "loadArrayCollection" from export2mongodb.py
+        The same as "loadArrayCollection" on export2mongodb.py
         :param filename:
         :param colname:
         :return:
@@ -175,7 +181,7 @@ class MongoAPI:
         col.delete_many({})
         col.insert_many(items)
 
-    def patch_hida(self, filename: str, hidaname: str):
+    def patch_hida(self, filename: str, hidaname: str) -> None:
         '''
         The same as "patchHida" on export2mongodb.py file
         :param hidaname:
@@ -202,7 +208,7 @@ class MongoAPI:
             hida_col.delete_many({})
             hida_col.insert_many(monuments)
 
-    def patch_resolved(self, resolvedname: str, filename: str, hidaname: str):
+    def patch_resolved(self, resolvedname: str, filename: str, hidaname: str) -> None:
         '''
         The same as "patchResolved" on export2mongodb.py file
         :param filename:
@@ -274,7 +280,7 @@ class MongoAPI:
             resolved_col.insert_many(resolved)
             # print(resolved)
 
-    def project_metadata_hida(self, metadataname: str, hidaname: str):
+    def project_metadata_hida(self, metadataname: str, hidaname: str) -> None:
         '''
         The same as "projectMetaDataHida" on export2mongodb.py
         :param metadataname:
@@ -329,7 +335,7 @@ class MongoAPI:
                             "Denkmalname": list(denkmalname)}
                     })
 
-    def load_dict_collection(self, filename: str, colname: str):
+    def load_dict_collection(self, filename: str, colname: str) -> None:
         '''
         The same as "loadDictCollection" on export2mongodb.py
         :param filename:
@@ -343,7 +349,7 @@ class MongoAPI:
         col.delete_many({})
         col.insert_one(item)
 
-    def patch_dir(self, resolvedname: str, folders: str, path: str):
+    def patch_dir(self, resolvedname: str, folders: str, path: str) -> None:
         '''
         The same as "patchDir" on export2mongodb.py
         :param resolvedname:
@@ -365,7 +371,7 @@ class MongoAPI:
                     resolved_col.update_many(
                         {"file": f}, {"$set": {"dir": dir}})
 
-    def patch_keywords(self, resolvedname: str, topicsname: str):
+    def patch_keywords(self, resolvedname: str, topicsname: str) -> None:
         '''
         The same as "patchKeywords" on export2mongodb.py
         :param resolvedname:
@@ -394,7 +400,7 @@ class MongoAPI:
                         theme: topic["keywords"][theme]
                     }})
 
-    def project_metadata_keywords(self, metadataname: str):
+    def project_metadata_keywords(self, metadataname: str) -> None:
         '''
         The same as "patchMetaDataKeywords" on export2mongodb.py
         :param metadataname:
@@ -410,7 +416,7 @@ class MongoAPI:
                             theme: topic["keywords"][theme]
                         }})
 
-    def unproject_metadata_keywords(self, metadataname: str):
+    def unproject_metadata_keywords(self, metadataname: str) -> None:
         '''
         The same as "unprojectMetaDataKeywords" on export2mongodb.py
         :param metadataname:
@@ -423,7 +429,7 @@ class MongoAPI:
                 for theme in topic["keywords"]:
                     col.update_one({"_id": doc["_id"]}, {"$unset": {theme: None}})
 
-    def project_hida(self, resolvedname: str):
+    def project_hida(self, resolvedname: str) -> None:
         '''
         The same as "projectHida" on export2mongodb.py
         :param resolvedname:
@@ -452,7 +458,7 @@ class MongoAPI:
                                  "Denkmalname": list(set(denkmalname))}
                     })
 
-    def patch_vorhaben(self, resolvedname: str):
+    def patch_vorhaben(self, resolvedname: str) -> None:
         '''
         The same as "patchVorhaben" on export2mongodb.py
         :param resolvedname:
@@ -468,7 +474,7 @@ class MongoAPI:
                         "$set": {"vorhaben": []}
                     })
 
-    def patch_categories(self, words: str, categoriesname: str):
+    def patch_categories(self, words: str, categoriesname: str) -> None:
         '''
         The same as "patchCategories" on export2mongodb.py
         :param words:
@@ -494,7 +500,7 @@ class MongoAPI:
         cat_col.delete_many({})
         cat_col.insert_one(catcolors)
 
-    def load_embddings(self, filename: str, colname: str):
+    def load_embddings(self, filename: str, colname: str) -> None:
         '''
         The same as "loadEmbddings" on export2mongodb.py
         :param filename:
@@ -510,7 +516,7 @@ class MongoAPI:
         col.delete_many({})
         col.insert_many(items)
 
-    def load_no_matches(self, filename: str, colname: str):
+    def load_no_matches(self, filename: str, colname: str) -> None:
         '''
         The same as "loadNoMatches" on export2mongodb.py
         :param filename:
@@ -526,7 +532,7 @@ class MongoAPI:
         col.delete_many({})
         col.insert_many(items)
 
-    def patch_inv_taxo(self, resolvedname: str, invtaxo: str):
+    def patch_inv_taxo(self, resolvedname: str, invtaxo: str) -> None:
         '''
         The same as "patchInvTaxo" on export2mongodb.py
         :param resolvedname:
@@ -550,7 +556,7 @@ class MongoAPI:
                 resolved_col.update_one({"_id": reso2["_id"]}, {
                     "$set": {"Sachbegriff": sl}})
 
-    def project_hida_inv_taxo(self, hidaname: str, invtaxo: str):
+    def project_hida_inv_taxo(self, hidaname: str, invtaxo: str) -> None:
         '''
         The same as "projectHidaInvTaxo" on export2mongodb.py
         :param hidaname:
@@ -573,7 +579,7 @@ class MongoAPI:
                 hida_col.update_one({"_id": hida["_id"]}, {
                     "$set": {"Sachbegriff": sl}})
 
-    def color_generator(self, number_of_colors):
+    def color_generator(self, number_of_colors) -> list:
         # TODO: Check whether this function should be here
         '''
         The same as "color_generator" on export2mongodb.py
