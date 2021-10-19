@@ -16,7 +16,11 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
                 hasattr(subclass, 'update') and
                 callable(subclass.update) and
                 hasattr(subclass, 'delete') and
-                callable(subclass.delete)
+                callable(subclass.delete) and
+                hasattr(subclass, 'get_column_names') and
+                callable(subclass.get_column_names) and
+                hasattr(subclass, 'update_collection') and
+                callable(subclass.update_collection)
                 )
 
     @abc.abstractmethod
@@ -61,6 +65,16 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         '''
         pass
 
+    @abc.abstractmethod
+    def update_collection(self, collection_name: str, data: any) -> None:
+        '''
+        Given a collection name the function removes all the data and put new information
+        :param collection_name: name of the collection that will be updated
+        :param data: data to put into the collection
+        :return: None
+        '''
+        pass
+
     # All the functions interfaces were made from the functions on file export2mongodb.py in https://github.com/cfillies/semkibardoc
 
     @abc.abstractmethod
@@ -75,168 +89,4 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         '''
         pass
 
-    @abc.abstractmethod
-    def load_array_collection(self, filename: str, colname: str) -> None:
-        '''
-        The same as "loadArrayCollection" on export2mongodb.py
-        :param filename:
-        :param colname:
-        :return:
-        '''
-        pass
 
-    @abc.abstractmethod
-    def patch_hida(self, filename: str, hidaname: str) -> None:
-        '''
-        The same as "patchHida" on export2mongodb.py file
-        :param hidaname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def patch_resolved(self, resolvedname: str, filename: str, hidaname: str) -> None:
-        '''
-        The same as "patchResolved" on export2mongodb.py file
-        :param filename:
-        :param hidaname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def project_metadata_hida(self, metadataname: str, hidaname: str) -> None:
-        '''
-        The same as "projectMetaDataHida" on export2mongodb.py
-        :param metadataname:
-        :param hidaname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def load_dict_collection(self, filename: str, colname: str) -> None:
-        '''
-        The same as "loadDictCollection" on export2mongodb.py
-        :param filename:
-        :param colname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def patch_dir(self, resolvedname: str, folders: str, path: str) -> None:
-        '''
-        The same as "patchDir" on export2mongodb.py
-        :param resolvedname:
-        :param folders:
-        :param path:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def patch_keywords(self, resolvedname: str, topicsname: str) -> None:
-        '''
-        The same as "patchKeywords" on export2mongodb.py
-        :param resolvedname:
-        :param topicsname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def project_metadata_keywords(self, metadataname: str) -> None:
-        '''
-        The same as "patchMetaDataKeywords" on export2mongodb.py
-        :param metadataname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def unproject_metadata_keywords(self, metadataname: str) -> None:
-        '''
-        The same as "unprojectMetaDataKeywords" on export2mongodb.py
-        :param metadataname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def project_hida(self, resolvedname: str) -> None:
-        '''
-        The same as "projectHida" on export2mongodb.py
-        :param resolvedname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def patch_vorhaben(self, resolvedname: str) -> None:
-        '''
-        The same as "patchVorhaben" on export2mongodb.py
-        :param resolvedname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def patch_categories(self, words: str, categoriesname: str) -> None:
-        '''
-        The same as "patchCategories" on export2mongodb.py
-        :param words:
-        :param categoriesname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def load_embddings(self, filename: str, colname: str) -> None:
-        '''
-        The same as "loadEmbddings" on export2mongodb.py
-        :param filename:
-        :param colname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def load_no_matches(self, filename: str, colname: str) -> None:
-        '''
-        The same as "loadNoMatches" on export2mongodb.py
-        :param filename:
-        :param colname:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def patch_inv_taxo(self, resolvedname: str, invtaxo: str) -> None:
-        '''
-        The same as "patchInvTaxo" on export2mongodb.py
-        :param resolvedname:
-        :param invtaxo:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def project_hida_inv_taxo(self, hidaname: str, invtaxo: str) -> None:
-        '''
-        The same as "projectHidaInvTaxo" on export2mongodb.py
-        :param hidaname:
-        :param invtaxo:
-        :return:
-        '''
-        pass
-
-    @abc.abstractmethod
-    def color_generator(self, number_of_colors) -> list:
-        # TODO: Check whether this function should be here
-        '''
-        The same as "color_generator" on export2mongodb.py
-        :param number_of_colors:
-        :return:
-        '''
-        pass
