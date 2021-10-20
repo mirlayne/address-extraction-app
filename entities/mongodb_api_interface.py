@@ -45,7 +45,7 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def update(self) -> dict:
+    def update(self, data: dict) -> dict:
         '''
         Edit data into the database
         :return: the new data value
@@ -66,6 +66,16 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         '''
         Auxiliary function to avoid using a global variable
         :return: Value of variable "collist" in line 37 of export2mongodb.py
+        '''
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def insert_in_collection(self, collection_name: str, data: any) -> None:
+        '''
+        Given a collection name the function removes all the data and put new information
+        :param collection_name: name of the collection that will be updated
+        :param data: data to put into the collection
+        :return: None
         '''
         raise NotImplementedError
 

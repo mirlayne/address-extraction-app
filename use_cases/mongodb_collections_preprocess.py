@@ -20,6 +20,8 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
 
         with open(filename, encoding='utf-8') as f:
             items = json.loads(f.read())
+            if isinstance(items, dict):
+                return [items]
             return items
 
     def patch_hida(self, filename: str) -> list:
@@ -33,7 +35,7 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
             monuments = []
             for hid in hida0:
                 monument = hida0[hid]
-                if "AdresseDict" in monument:
+                if "AdresseDict" in monument:  # TODO: Ask the reason of this block
                     adict = monument["AdresseDict"]
                     keys = adict.keys()
                     for str_k in keys:
@@ -122,11 +124,11 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
         '''
 
         for doc in metadata_col:
+            sachbegriff = set([])
+            denkmalart = set([])
+            denkmalname = set([])
             if "hidas" in doc:
-                hida = {}
-                sachbegriff = set([])
-                denkmalart = set([])
-                denkmalname = set([])
+                # hida = {}  # TODO: Ask the reason of this variable
                 for hidaid in doc["hidas"]:
                     hidaobj = self._find_one(hida_col, {"OBJ-Dok-Nr": hidaid})
                     if not hidaobj:
@@ -141,51 +143,22 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
 
                     sachbegriffh = hidaobj["Sachbegriff"]
                     sachbegriff.update(sachbegriffh)
+                    # hida[hidaid] = hidaobj
 
-                    hida[hidaid] = hidaobj
-                    yield {"_id": doc["_id"],
-                            "$set": {
-                                "Sachbegriff": list(sachbegriff),
-                                "Denkmalart": list(denkmalart),
-                                "Denkmalname": list(denkmalname)}
-                        }
-                    # TODO: remove the comments
-                    # metadata_col.update_one(
-                    # {"_id": doc["_id"]}, {
-                    #     "$set": {
-                    #         "Sachbegriff": list(sachbegriff),
-                    #         "Denkmalart": list(denkmalart),
-                    #         "Denkmalname": list(denkmalname)}
-                    # })
-            else:
-                sachbegriff = set([])
-                denkmalart = set([])
-                denkmalname = set([])
-                yield {"_id": doc["_id"],
-                        "$set": {
-                            "Sachbegriff": list(sachbegriff),
-                            "Denkmalart": list(denkmalart),
-                            "Denkmalname": list(denkmalname)}
-                    }
-                # TODO: remove the comments
-                # metadata_col.update_one(
-                #     {"_id": doc["_id"]}, {
-                #         "$set": {
-                #             "Sachbegriff": list(sachbegriff),
-                #             "Denkmalart": list(denkmalart),
-                #             "Denkmalname": list(denkmalname)}
-                #     })
-
-    def load_dict_collection(self, filename: str) -> dict:
-        '''
-        The same as "loadDictCollection" on export2mongodb.py
-        :param filename:
-        :return:
-        '''
-
-        with open(filename, encoding='utf-8') as f:
-            item = json.loads(f.read())
-        return item
+            yield {"_id": doc["_id"],
+                   "$set": {
+                        "Sachbegriff": list(sachbegriff),
+                        "Denkmalart": list(denkmalart),
+                        "Denkmalname": list(denkmalname)}
+                   }
+            # TODO: remove the comments
+            # metadata_col.update_one(
+            # {"_id": doc["_id"]}, {
+            #     "$set": {
+            #         "Sachbegriff": list(sachbegriff),
+            #         "Denkmalart": list(denkmalart),
+            #         "Denkmalname": list(denkmalname)}
+            # })
 
     def patch_dir(self, folders_dict: list, path: str) -> Iterator[dict]:
         '''
@@ -197,14 +170,14 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
 
         for folder in folders_dict:
             for file in folder["files"]:
-                dir = folder["dir"]
-                dir = dir.replace(path, "")
+                dir_ = folder["dir"]
+                dir_ = dir_.replace(path, "")
                 f = file
                 if f.endswith(".doc"):
                     f = f.replace(".doc", ".docx")
                 if f.endswith(".docx"):
-                    print(dir, f)
-                    yield {"file": f, "$set": {"dir": dir}}
+                    print(dir_, f)
+                    yield {"file": f, "$set": {"dir": dir_}}
                     # TODO: remove the comments
                     # resolved_col.update_many(
                     #     {"file": f}, {"$set": {"dir": dir}})
@@ -309,8 +282,8 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
                     reso1["vorhaben"][0] == 'Errichtung einer Mega-Light-Werbeanlage':
                 print(reso1["file"])
                 yield {"file": reso1["file"],
-                        "$set": {"vorhaben": []}
-                    }
+                       "$set": {"vorhaben": []}
+                       }
                 # TODO: remove comment when will be tested and OK
                 # resolved_col.update_one(
                 #     {"file": reso1["file"]}, {
@@ -333,7 +306,7 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
                 if not len(v["words"][wor]):
                     categories.append(wor)
         catcolors = {}
-        color = self.color_generator(len(categories))
+        color = self._color_generator(len(categories))
         for idx, elem in enumerate(categories):
             catcolors[elem] = {
                 "color": color[idx], "label": elem.upper()}
@@ -343,7 +316,7 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
         # cat_col.delete_many({})
         # cat_col.insert_one(catcolors)
 
-    def load_embddings(self, filename: str) -> list:
+    def load_embeddings(self, filename: str) -> list:
         '''
         The same as "loadEmbddings" on export2mongodb.py
         :param filename:
@@ -387,7 +360,7 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
                 for sb in sblist:
                     for plist in self._find(invtaxo_col, {"name": sb}):
                         for pa in plist["parents"]:
-                            if pa != "ARCHITEKTUR" and pa != "FUNKTION" and pa != "BAUAUFGABE" and not pa in sl:
+                            if pa != "ARCHITEKTUR" and pa != "FUNKTION" and pa != "BAUAUFGABE" and pa not in sl:
                                 sl.append(pa)
                 yield {"_id": reso2["_id"],
                        "$set": {"Sachbegriff": sl}
@@ -411,7 +384,7 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
                 for sb in sblist:
                     for plist in self._find(invtaxo_col, {"name": sb}):
                         for pa in plist["parents"]:
-                            if pa != "ARCHITEKTUR" and pa != "FUNKTION" and pa != "BAUAUFGABE" and not pa in sl:
+                            if pa != "ARCHITEKTUR" and pa != "FUNKTION" and pa != "BAUAUFGABE" and pa not in sl:
                                 sl.append(pa)
                 yield {"_id": hida["_id"],
                        "$set": {"Sachbegriff": sl}
@@ -432,14 +405,18 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
         return color
 
     @staticmethod
-    def _find(collection_list: list, search_term: dict):
+    def _find(collection_list: list, search_term: dict = None):
+        if not search_term:
+            return collection_list
         search_term_items = search_term.items()
         key = search_term_items[0][0]
         value = search_term_items[0][1]
         return [i for i in collection_list if i[key] == value]
 
     @staticmethod
-    def _find_one(collection_list: list, search_term: dict):
+    def _find_one(collection_list: list, search_term: dict = None):
+        if not search_term:
+            return collection_list[0]
         search_term_items = search_term.items()
         key = search_term_items[0][0]
         value = search_term_items[0][1]

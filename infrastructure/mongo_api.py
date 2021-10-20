@@ -15,7 +15,6 @@ log.basicConfig(
 
 class MongoAPI(IMongoAPI):
     def __init__(self, mongodb_api_client: MongoClient, data: MongoDBSettings) -> None:
-        super.__init__()
         self.client = mongodb_api_client
 
         database = data.database
@@ -79,7 +78,7 @@ class MongoAPI(IMongoAPI):
         '''
         return self.cursor.list_collection_names() # Value of variable "collist" in line 37 of export2mongodb.py
 
-    def update_collection(self, collection_name: str, data: any) -> None:
+    def insert_in_collection(self, collection_name: str, data: any) -> None:
         '''
         Given a collection name the function removes all the data and put new information
         :param collection_name: name of the collection that will be updated
@@ -90,4 +89,15 @@ class MongoAPI(IMongoAPI):
         collection = self.cursor[collection_name]
         collection.delete_many({})
         collection.insert_many(data)
+
+    def update_collection(self, collection_name: str, data: any) -> None:
+        '''
+        Given a collection name the function removes all the data and put new information
+        :param collection_name: name of the collection that will be updated
+        :param data: data to put into the collection
+        :return: None
+        '''
+
+        collection = self.cursor[collection_name]
+        collection.update_many(data)
 

@@ -17,8 +17,6 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
                 callable(subclass.patch_resolved) and
                 hasattr(subclass, 'project_metadata_hida') and
                 callable(subclass.project_metadata_hida) and
-                hasattr(subclass, 'load_dict_collection') and
-                callable(subclass.load_dict_collection) and
                 hasattr(subclass, 'patch_dir') and
                 callable(subclass.patch_dir) and
                 hasattr(subclass, 'patch_keywords') and
@@ -90,15 +88,6 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def load_dict_collection(self, filename: str) -> dict:
-        '''
-        The same as "loadDictCollection" on export2mongodb.py
-        :param filename:
-        :return:
-        '''
-        raise NotImplementedError
-
-    @abc.abstractmethod
     def patch_dir(self, folders_dict: list, path: str) -> Iterator[dict]:
         '''
         The same as "patchDir" on export2mongodb.py
@@ -163,7 +152,7 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def load_embddings(self, filename: str) -> list:
+    def load_embeddings(self, filename: str) -> list:
         '''
         The same as "loadEmbddings" on export2mongodb.py
         :param filename:

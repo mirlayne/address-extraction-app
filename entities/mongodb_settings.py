@@ -16,5 +16,11 @@ class MongoDBSettings:
         return self._collection
 
     @collection.setter
-    def setting(self, value: str):
+    def collection(self, value: str):
         self._collection = value
+
+    def __getitem__(self, item):
+        try:
+            return self._collection[item]
+        except KeyError as e:
+            raise e
