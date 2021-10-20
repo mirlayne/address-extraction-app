@@ -24,12 +24,16 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
                 )
 
     @abc.abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def read(self) -> list:
         '''
         Read data from database
         :return: A list of recovered data
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def write(self, data: dict) -> dict:
@@ -38,7 +42,7 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         :param data: new data that will be inserted into the database
         :return: data inserted
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def update(self) -> dict:
@@ -46,7 +50,7 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         Edit data into the database
         :return: the new data value
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def delete(self, data: dict) -> dict:
@@ -55,7 +59,7 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         :param data: element that will be removed
         :return: removed element
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def get_column_names(self) -> list:
@@ -63,7 +67,7 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         Auxiliary function to avoid using a global variable
         :return: Value of variable "collist" in line 37 of export2mongodb.py
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def update_collection(self, collection_name: str, data: any) -> None:
@@ -73,20 +77,8 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
         :param data: data to put into the collection
         :return: None
         '''
-        pass
+        raise NotImplementedError
 
-    # All the functions interfaces were made from the functions on file export2mongodb.py in https://github.com/cfillies/semkibardoc
 
-    @abc.abstractmethod
-    def mongo_export(self, mongodb_utils_filepath: str, hida_name: str, metadata_name: str, json_folderpath: str) -> None:
-        '''
-        Function corresponding to "mongoExport" on file export2mongodb.py
-        :param mongodb_utils_filepath: json file that stores the necessary data such as column names and utils json file names
-        :param hida_name: name of hida file
-        :param metadata_name: name of metadata
-        :param json_folderpath: folder where are stored the json files
-        :return:
-        '''
-        pass
 
 

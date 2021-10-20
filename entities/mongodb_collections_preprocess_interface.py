@@ -46,13 +46,17 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
                 )
 
     @abc.abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     def load_array_collection(self, filename: str) -> dict:
         '''
         The same as "loadArrayCollection" on export2mongodb.py
         :param filename:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def patch_hida(self, filename: str) -> list:
@@ -61,10 +65,10 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
         :param filename:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def patch_resolved(self, filename: str, hida_col: dict) -> list:
+    def patch_resolved(self, filename: str, hida_col: list) -> list:
         # TODO: check the part find_one function
         '''
         The same as "patchResolved" on export2mongodb.py file
@@ -72,18 +76,18 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
         :param hida_col: dictionary from the collection "hida"
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def project_metadata_hida(self, metadataname: str, hidaname: str) -> Iterator[dict,]:
+    def project_metadata_hida(self, metadata_col: list, hida_col: list) -> Iterator[dict]:
         # TODO: check the part find_one function
         '''
         The same as "projectMetaDataHida" on export2mongodb.py
-        :param metadataname:
-        :param hidaname:
+        :param metadata_col:
+        :param hida_col:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def load_dict_collection(self, filename: str) -> dict:
@@ -92,71 +96,71 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
         :param filename:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def patch_dir(self, folders_dict: dict, path: str) -> Iterator[dict]:
+    def patch_dir(self, folders_dict: list, path: str) -> Iterator[dict]:
         '''
         The same as "patchDir" on export2mongodb.py
         :param folders_dict: all the documents of the collection
         :param path:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def patch_keywords(self, topics_dict: dict) -> Iterator[dict]:
+    def patch_keywords(self, topics_dict: list) -> Iterator[dict]:
         '''
         The same as "patchKeywords" on export2mongodb.py
         :param topics_dict: all the documents of the collection
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def project_metadata_keywords(self, collection_dict: dict) -> Iterator[dict]:
+    def project_metadata_keywords(self, collection_dict: list) -> Iterator[dict]:
         '''
         The same as "patchMetaDataKeywords" on export2mongodb.py
         :param collection_dict: all the documents of the collection
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def unproject_metadata_keywords(self, collection_dict: dict) -> Iterator[dict]:
+    def unproject_metadata_keywords(self, collection_dict: list) -> Iterator[dict]:
         '''
         The same as "unprojectMetaDataKeywords" on export2mongodb.py
         :param collection_dict: all the documents of the collection
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def project_hida(self, resolved_dict: dict) -> Iterator[dict]:
+    def project_hida(self, resolved_dict: list) -> Iterator[dict]:
         '''
         The same as "projectHida" on export2mongodb.py
         :param resolved_dict: all the documents of the collection
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def patch_vorhaben(self, resolved_dict: dict) -> Iterator[dict]:
+    def patch_vorhaben(self, resolved_dict: list) -> Iterator[dict]:
         '''
         The same as "patchVorhaben" on export2mongodb.py
         :param resolved_dict: all the documents of the collection
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def patch_categories(self, vorhabeninv_dict: dict) -> list:
+    def patch_categories(self, vorhabeninv_dict: list) -> list:
         '''
         The same as "patchCategories" on export2mongodb.py
         :param vorhabeninv_dict: all the documents of the collection
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def load_embddings(self, filename: str) -> list:
@@ -165,7 +169,7 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
         :param filename:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def load_no_matches(self, filename: str) -> list:
@@ -174,10 +178,10 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
         :param filename:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def patch_inv_taxo(self, resolved_dict: dict, invtaxo: str) -> Iterator[dict]:
+    def patch_inv_taxo(self, resolved_dict: list, invtaxo: list) -> Iterator[dict]:
         # TODO: fix this function
         '''
         The same as "patchInvTaxo" on export2mongodb.py
@@ -185,24 +189,24 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
         :param invtaxo:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def project_hida_inv_taxo(self, hidaname: str, invtaxo: str) -> Iterator[dict]:
+    def project_hida_inv_taxo(self, hida_col: list, invtaxo_col: list) -> Iterator[dict]:
         # TODO: fix this function
         '''
         The same as "projectHidaInvTaxo" on export2mongodb.py
-        :param hidaname:
-        :param invtaxo:
+        :param hida_col:
+        :param invtaxo_col:
         :return:
         '''
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
-    def _color_generator(self, number_of_colors) -> list:
+    def _color_generator(self, number_of_colors: int) -> list:
         '''
         The same as "color_generator" on export2mongodb.py
         :param number_of_colors:
         :return:
         '''
-        pass
+        raise NotImplementedError

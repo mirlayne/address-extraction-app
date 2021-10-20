@@ -2,10 +2,12 @@ import json
 import random
 from typing import Iterator
 
-from entities.mongo_api_interface import MongoAPIInterface
+from entities.mongodb_api_interface import MongoAPIInterface as MongoAPIInterface
+from entities.mongodb_collections_preprocess_interface import MongoDBCollectionsPreprocessInterface \
+    as IMongoDBCollectionsPreprocess
 
 
-class MongoDBCollectionsPreprocess:
+class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
     def __init__(self, mongo_api: MongoAPIInterface):
         self.mongo_api = mongo_api
 
@@ -34,16 +36,16 @@ class MongoDBCollectionsPreprocess:
                 if "AdresseDict" in monument:
                     adict = monument["AdresseDict"]
                     keys = adict.keys()
-                    for str in keys:
-                        if "." in str:
-                            str2 = str.replace(".", "")
-                            adict[str2] = adict[str]
-                            del adict[str]
+                    for str_k in keys:
+                        if "." in str_k:
+                            str2 = str_k.replace(".", "")
+                            adict[str2] = adict[str_k]
+                            del adict[str_k]
                             continue
                 monuments.append(monument)
             return monuments
 
-    def patch_resolved(self, filename: str, hida_col: dict) -> list:
+    def patch_resolved(self, filename: str, hida_col: list) -> list:
         # TODO: check the part find_one function
         '''
         The same as "patchResolved" on export2mongodb.py file
@@ -77,8 +79,7 @@ class MongoDBCollectionsPreprocess:
                                             treflist = objnr["treffer"][meth]
                                             tref = treflist[0]
                                             hidaid = tref[0]
-                                            hidaobj = hida_col.find_one(
-                                                {"OBJ-Dok-Nr": hidaid})
+                                            hidaobj = self._find_one(hida_col, {"OBJ-Dok-Nr": hidaid})
                                             listentext = hidaobj["Listentext"]
                                             denkmalname = hidaobj["Denkmalname"]
                                             denkmalart = hidaobj["Denkmalart"]
@@ -93,8 +94,7 @@ class MongoDBCollectionsPreprocess:
                                             denkmal = objnr[o]
                                             for hidaobj in denkmal["treffer"][meth]:
                                                 hidaid = hidaobj[0]
-                                                hidaobj = hida_col.find_one(
-                                                    {"OBJ-Dok-Nr": hidaid})
+                                                hidaobj = self._find_one(hida_col, {"OBJ-Dok-Nr": hidaid})
                                                 listentext = hidaobj["Listentext"]
                                                 denkmalname = hidaobj["Denkmalname"]
                                                 denkmalart = hidaobj["Denkmalart"]
@@ -113,28 +113,24 @@ class MongoDBCollectionsPreprocess:
                                          "obj": obj})
             return resolved
 
-    def project_metadata_hida(self, metadataname: str, hidaname: str) -> Iterator[dict]:
-        # TODO: check the part find_one function
+    def project_metadata_hida(self, metadata_col: list, hida_col: list) -> Iterator[dict]:
         '''
         The same as "projectMetaDataHida" on export2mongodb.py
-        :param metadataname:
-        :param hidaname:
+        :param metadata_col:
+        :param hida_col:
         :return:
         '''
-        hida_col = self.cursor[hidaname]
-        metadata_col = self.cursor[metadataname]
-        for doc in metadata_col.find():
+
+        for doc in metadata_col:
             if "hidas" in doc:
                 hida = {}
                 sachbegriff = set([])
                 denkmalart = set([])
                 denkmalname = set([])
                 for hidaid in doc["hidas"]:
-                    hidaobj = hida_col.find_one(
-                        {"OBJ-Dok-Nr": hidaid})
+                    hidaobj = self._find_one(hida_col, {"OBJ-Dok-Nr": hidaid})
                     if not hidaobj:
-                        hidaobj = hida_col.find_one(
-                            {"Teil-Obj-Dok-Nr": hidaid})
+                        hidaobj = self._find_one(hida_col, {"Teil-Obj-Dok-Nr": hidaid})
                     if "Denkmalname" in hidaobj:
                         s = hidaobj["Denkmalname"]
                         denkmalname.update(s)
@@ -191,7 +187,7 @@ class MongoDBCollectionsPreprocess:
             item = json.loads(f.read())
         return item
 
-    def patch_dir(self, folders_dict: dict, path: str) -> Iterator[dict]:
+    def patch_dir(self, folders_dict: list, path: str) -> Iterator[dict]:
         '''
         The same as "patchDir" on export2mongodb.py
         :param folders_dict: all the documents of the collection
@@ -213,7 +209,7 @@ class MongoDBCollectionsPreprocess:
                     # resolved_col.update_many(
                     #     {"file": f}, {"$set": {"dir": dir}})
 
-    def patch_keywords(self, topics_dict: dict) -> Iterator[dict]:
+    def patch_keywords(self, topics_dict: list) -> Iterator[dict]:
         '''
         The same as "patchKeywords" on export2mongodb.py
         :param topics_dict: all the documents of the collection
@@ -231,7 +227,7 @@ class MongoDBCollectionsPreprocess:
                     #     theme: topic["keywords"][theme]
                     # }})
 
-    def project_metadata_keywords(self, collection_dict: dict) -> Iterator[dict]:
+    def project_metadata_keywords(self, collection_dict: list) -> Iterator[dict]:
         '''
         The same as "patchMetaDataKeywords" on export2mongodb.py
         :param collection_dict: all the documents of the collection
@@ -251,7 +247,7 @@ class MongoDBCollectionsPreprocess:
                     #         theme: topic["keywords"][theme]
                     #     }})
 
-    def unproject_metadata_keywords(self, collection_dict: dict) -> Iterator[dict]:
+    def unproject_metadata_keywords(self, collection_dict: list) -> Iterator[dict]:
         '''
         The same as "unprojectMetaDataKeywords" on export2mongodb.py
         :param collection_dict: all the documents of the collection
@@ -266,7 +262,7 @@ class MongoDBCollectionsPreprocess:
                     # TODO: remove comment when will be tested and OK
                     # col.update_one({"_id": doc["_id"]}, {"$unset": {theme: None}})
 
-    def project_hida(self, resolved_dict: dict) -> Iterator[dict]:
+    def project_hida(self, resolved_dict: list) -> Iterator[dict]:
         '''
         The same as "projectHida" on export2mongodb.py
         :param resolved_dict: all the documents of the collection
@@ -301,7 +297,7 @@ class MongoDBCollectionsPreprocess:
                 #                  "Denkmalname": list(set(denkmalname))}
                 #     })
 
-    def patch_vorhaben(self, resolved_dict: dict) -> Iterator[dict]:
+    def patch_vorhaben(self, resolved_dict: list) -> Iterator[dict]:
         '''
         The same as "patchVorhaben" on export2mongodb.py
         :param resolved_dict: all the documents of the collection
@@ -321,7 +317,7 @@ class MongoDBCollectionsPreprocess:
                 #         "$set": {"vorhaben": []}
                 #     })
 
-    def patch_categories(self, vorhabeninv_dict: dict) -> list:
+    def patch_categories(self, vorhabeninv_dict: list) -> list:
         '''
         The same as "patchCategories" on export2mongodb.py
         :param vorhabeninv_dict: all the documents of the collection
@@ -334,7 +330,7 @@ class MongoDBCollectionsPreprocess:
 
         for v in vorhabeninv_dict:
             for wor in v["words"]:
-                if len(v["words"][wor]) == 0:
+                if not len(v["words"][wor]):
                     categories.append(wor)
         catcolors = {}
         color = self.color_generator(len(categories))
@@ -374,24 +370,22 @@ class MongoDBCollectionsPreprocess:
                 items.append({"word": m, "count": mlist[m]})
         return items
 
-    def patch_inv_taxo(self, resolved_dict: dict, invtaxo: str) -> Iterator[dict]:
-        # TODO: fix this function
+    def patch_inv_taxo(self, resolved_dict: list, invtaxo_col: list) -> Iterator[dict]:
         '''
         The same as "patchInvTaxo" on export2mongodb.py
         :param resolved_dict: all the documents of the collection
-        :param invtaxo:
+        :param invtaxo_col:
         :return:
         '''
 
-        invtaxo_col = self.cursor[invtaxo]
         for reso2 in resolved_dict:
             sblist = []
             if "Sachbegriff" in reso2:
                 sblist = reso2["Sachbegriff"]
             if len(sblist):
-                sl = sblist
+                sl = sblist.copy()
                 for sb in sblist:
-                    for plist in invtaxo_col.find({"name": sb}): # TODO: study collection.find() and substitude
+                    for plist in self._find(invtaxo_col, {"name": sb}):
                         for pa in plist["parents"]:
                             if pa != "ARCHITEKTUR" and pa != "FUNKTION" and pa != "BAUAUFGABE" and not pa in sl:
                                 sl.append(pa)
@@ -401,32 +395,32 @@ class MongoDBCollectionsPreprocess:
                 # resolved_col.update_one({"_id": reso2["_id"]}, {
                 #     "$set": {"Sachbegriff": sl}})
 
-    def project_hida_inv_taxo(self, hidaname: str, invtaxo: str) -> Iterator[dict]:
+    def project_hida_inv_taxo(self, hida_col: list, invtaxo_col: list) -> Iterator[dict]:
         # TODO: fix this function
         '''
         The same as "projectHidaInvTaxo" on export2mongodb.py
-        :param hidaname:
-        :param invtaxo:
+        :param hida_col:
+        :param invtaxo_col:
         :return:
         '''
 
-        hida_col = self.cursor[hidaname]
-        invtaxo_col = self.cursor[invtaxo]
-        hidal = hida_col.find()
-        for hida in hidal:
+        for hida in hida_col:
             sblist = hida["Sachbegriff"]
             if len(sblist):
                 sl = sblist
                 for sb in sblist:
-                    for plist in invtaxo_col.find({"name": sb}):
+                    for plist in self._find(invtaxo_col, {"name": sb}):
                         for pa in plist["parents"]:
                             if pa != "ARCHITEKTUR" and pa != "FUNKTION" and pa != "BAUAUFGABE" and not pa in sl:
                                 sl.append(pa)
-                hida_col.update_one({"_id": hida["_id"]}, {
-                    "$set": {"Sachbegriff": sl}})
+                yield {"_id": hida["_id"],
+                       "$set": {"Sachbegriff": sl}
+                       }
+                # hida_col.update_one({"_id": hida["_id"]}, {
+                #     "$set": {"Sachbegriff": sl}})
 
     @staticmethod
-    def _color_generator(number_of_colors) -> list:
+    def _color_generator(number_of_colors: int) -> list:
         '''
         The same as "color_generator" on export2mongodb.py
         :param number_of_colors:
@@ -436,3 +430,19 @@ class MongoDBCollectionsPreprocess:
         color = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
                  for i in range(number_of_colors)]
         return color
+
+    @staticmethod
+    def _find(collection_list: list, search_term: dict):
+        search_term_items = search_term.items()
+        key = search_term_items[0][0]
+        value = search_term_items[0][1]
+        return [i for i in collection_list if i[key] == value]
+
+    @staticmethod
+    def _find_one(collection_list: list, search_term: dict):
+        search_term_items = search_term.items()
+        key = search_term_items[0][0]
+        value = search_term_items[0][1]
+        for i in collection_list:
+            if i[key] == value:
+                return i
