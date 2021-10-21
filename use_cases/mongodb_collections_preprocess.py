@@ -5,6 +5,7 @@ from typing import Iterator
 from entities.mongodb_api_interface import MongoAPIInterface as MongoAPIInterface
 from entities.mongodb_collections_preprocess_interface import MongoDBCollectionsPreprocessInterface \
     as IMongoDBCollectionsPreprocess
+from use_cases.utils import Utils as Utils
 
 
 class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
@@ -406,20 +407,10 @@ class MongoDBCollectionsPreprocess(IMongoDBCollectionsPreprocess):
 
     @staticmethod
     def _find(collection_list: list, search_term: dict = None):
-        if not search_term:
-            return collection_list
-        search_term_items = search_term.items()
-        key = search_term_items[0][0]
-        value = search_term_items[0][1]
-        return [i for i in collection_list if i[key] == value]
+        utils = Utils()
+        return utils.find_many(collection_list, search_term)
 
     @staticmethod
     def _find_one(collection_list: list, search_term: dict = None):
-        if not search_term:
-            return collection_list[0]
-        search_term_items = search_term.items()
-        key = search_term_items[0][0]
-        value = search_term_items[0][1]
-        for i in collection_list:
-            if i[key] == value:
-                return i
+        utils = Utils()
+        return utils.find_one(collection_list, search_term)
