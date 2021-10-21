@@ -222,7 +222,8 @@ class MongoDBSettingUpService:
         json_path = os.path.join(self.json_folderpath, collection_name)
         return function_ref(*function_args, json_path)
 
-    def extract_metadata(self, mongodb_utils_filepath: str, folders: str, hida_name: str, metadata_name: str, json_folderpath: str) -> None:
+    def extract_metadata(self, mongodb_utils_filepath: str, folders: str, hida_name: str, metadata_name: str,
+                         json_folderpath: str, district: str) -> None:
         metadataname = metadata_name
 
         mongodb_collections_names = self.mongodb_api_obj.get_column_names()
@@ -240,12 +241,15 @@ class MongoDBSettingUpService:
             self.mongo_export(mongodb_utils_filepath, hida_name, metadata_name,
                                            json_folderpath)
 
-        hida = self.mongodb_api_obj["hida"]
-        support = self.mongodb_api_obj["support"]
+        # hida = self.mongodb_api_obj["hida"]
+        # support = self.mongodb_api_obj["support"]
 
         metadata = self.mongodb_api_obj[metadataname]
         extractText(name, path, metadata, tika, 100000, False)
-        initSupport(support, hida, district)
+
+        self.mongodb_api_obj.collection = "hida"
+        hida = self.mongodb_api_obj.read()
+        init_support(hida, district)
 
         findAddresses(metadata, support, "de")
         folders = self.mongodb_api_obj[folders]
