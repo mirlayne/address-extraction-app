@@ -67,7 +67,6 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def patch_resolved(self, filename: str, hida_col: list) -> list:
-        # TODO: check the part find_one function
         '''
         The same as "patchResolved" on export2mongodb.py file
         :param filename:
@@ -78,7 +77,6 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def project_metadata_hida(self, metadata_col: list, hida_col: list) -> Iterator[dict]:
-        # TODO: check the part find_one function
         '''
         The same as "projectMetaDataHida" on export2mongodb.py
         :param metadata_col:
@@ -171,7 +169,6 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def patch_inv_taxo(self, resolved_dict: list, invtaxo: list) -> Iterator[dict]:
-        # TODO: fix this function
         '''
         The same as "patchInvTaxo" on export2mongodb.py
         :param resolved_dict: all the documents of the collection
@@ -182,7 +179,6 @@ class MongoDBCollectionsPreprocessInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def project_hida_inv_taxo(self, hida_col: list, invtaxo_col: list) -> Iterator[dict]:
-        # TODO: fix this function
         '''
         The same as "projectHidaInvTaxo" on export2mongodb.py
         :param hida_col:

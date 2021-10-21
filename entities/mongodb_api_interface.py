@@ -25,7 +25,10 @@ class MongoAPIInterface(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def __init__(self) -> None:
-        raise NotImplementedError
+        self.client = None
+        self.cursor = None  # corresponding to "mydb" variable of export2mongodb.py
+        self.collection = None
+        self.data = None
 
     @abc.abstractmethod
     def read(self) -> list:
