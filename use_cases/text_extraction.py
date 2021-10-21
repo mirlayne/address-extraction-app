@@ -18,12 +18,22 @@ class TextExtraction:
         self.tika_client = tika_server
 
     def extract_text(self, file_path: str) -> str:
+        '''
+        Function corresponding to extract_text in module extractText.py from https://github.com/cfillies/semkibardoc
+        :param file_path:
+        :return:
+        '''
         d = open(file_path, 'rb')
         r = requests.put(self.tika_client + "/tika", data=d)
         r.encoding = r.apparent_encoding
         return r.text
 
     def extract_meta(self, file_path: str) -> dict:
+        '''
+        Function corresponding to extract_meta in module extractText.py from https://github.com/cfillies/semkibardoc
+        :param file_path:
+        :return:
+        '''
         file_name = str.split(file_path, '\\')[-1]
         response = requests.put(self.tika_client + "/meta", data=open(file_path,
                                                                       'rb'), headers={"Accept": "application/json"})
@@ -34,11 +44,21 @@ class TextExtraction:
         result['file_name'] = file_name
         return result
 
-    def extractText(self, district: str, path: str, col: list, startindex: NonNegativeInt, deleteall: bool) -> None:
+    def process_document(self, district: str, path: str, col: list, startindex: NonNegativeInt, deleteall: bool) -> None:
+        '''
+        Function corresponding to extractText in module extractText.py from https://github.com/cfillies/semkibardoc
+        :param district:
+        :param path:
+        :param col:
+        :param startindex:
+        :param deleteall:
+        :return:
+        '''
+
         i = startindex  # TODO: Ask for this variable
         m = 0
-        if deleteall:
-            col.delete_many({})
+        # if deleteall:  # TODO: This should be done in the function that calls this one
+        #     col.delete_many({})
         for root, d_names, f_names in os.walk(path):
             for f in f_names:
                 if not f.endswith(".xml"):
@@ -55,7 +75,7 @@ class TextExtraction:
                     met = {}
                     try:
                         util = Utils()
-                        res = util.find_one()
+                        res = util.find_one(col, {"file": f, "ext": ext, "path": root})
                         yield {"file": f, "ext": ext, "path": root,
                                "$set": {"meta": met, "text": txt, "district": district}
                                }
